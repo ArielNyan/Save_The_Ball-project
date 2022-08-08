@@ -22,7 +22,8 @@ local player = {
 }
 
 local buttons = {
-    menu_states = {}
+    menu_states = {},
+    game_over = {}
 }
 
 local enemies = {}
@@ -46,6 +47,10 @@ function love.load()
     buttons.menu_states.play_game = Button("Play Game", NewGame, nil, 120, 40)
     buttons.menu_states.exit_game = Button("Exit", love.event.quit, nil, 120, 40)
     
+    buttons.game_over.restart = Button("Restart", NewGame, nil, 200, 50)
+    buttons.game_over.menu = Button("Menu", changeGameState, "menu", 200, 50)
+    buttons.game_over.quit = Button("Quit Game", love.event.quit, nil, 200, 50)
+    
 
 
 
@@ -62,9 +67,16 @@ function love.mousepressed(x, y, button, istouch, presses)
                     buttons.menu_states[index]:checkPressed(x, y)
                 end
             end
+            end
         --end
+        if game.state == "game_over" then
+            if button == 1 then
+                for index in pairs(buttons.game_over) do
+                    buttons.game_over[index]:checkPressed(x, y)
+                end
+            end
+        end
     end
- end
 
 function love.update(dt)
     if game.state == "running" then
@@ -81,7 +93,7 @@ function love.update(dt)
                     end
                 end                
             else
-                changeGameState("menu")
+                changeGameState("game_over")
             end
             
         end
@@ -118,6 +130,11 @@ function love.draw()
      end
      
      if game.state == "game_over" then
-         love.graphics.circle("fill", player.x, player.y, 10)
+        love.graphics.printf(math.floor(game.points), love.graphics.newFont(20), 0, 10, love.graphics.getWidth(), "center")
+        buttons.game_over.restart:draw((love.graphics.getWidth()/2) - (buttons.game_over.restart.width / 2), 200, 90, 20)
+        buttons.game_over.menu:draw((love.graphics.getWidth()/2) - (buttons.game_over.restart.width / 2), 280, 90, 20)
+        buttons.game_over.quit:draw((love.graphics.getWidth()/2) - (buttons.game_over.restart.width / 2), 360, 90, 20)
+        --buttons.game_over.restart:draw(100,200,90,20)
+        love.graphics.circle("fill", player.x, player.y, 10)
      end
 end
